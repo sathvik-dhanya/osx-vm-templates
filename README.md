@@ -38,7 +38,7 @@ It may be possible to work around this by modifying the rc script directly with 
 
 The `prepare_vdi.sh` script uses [AutoDMG](https://github.com/MagerValp/AutoDMG)'s approach running the installer's ```OSInstall.pkg``` creating a fresh install in a temporary DMG sparse disk image which is converted into a VDI disk image using VirtualBox's command line tools.
 
-## Preparing the ISO
+## Preparing the ISO (This step works only until v10.12.3, see the alternative steps for the others)
 
 OS X's installer cannot be bootstrapped as easily as can Linux or Windows, and so exists the [prepare_iso.sh](https://github.com/timsutton/osx-vm-templates/blob/master/prepare_iso/prepare_iso.sh) script to perform modifications to it that will allow for an automated install and ultimately allow Packer and later, Vagrant, to have SSH access.
 
@@ -204,7 +204,7 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-## Alternative method using ```prepare_vdi.sh```, ```prepare_ovf.sh``` and packer virtualbox-ovf
+## Alternative method using ```prepare_vdi.sh```, ```prepare_ovf.sh``` and packer virtualbox-ovf (This works for v10.12.3+)
 
 This approach requires VirtualBox and unfortunately almost 30GB of free space.
 
@@ -240,6 +240,16 @@ packer build \
   -var source_path=macOS_10.12.ovf \
   template.json
 ```
+
+If the packer build fails with an error below
+```
+--> virtualbox-iso: 1 error(s) occurred:
+
+* Post-processor failed: open /packer_virtualbox-iso_virtualbox.box: permission denied
+
+==> Builds finished but no artifacts were created.
+```
+Then you can specify the `vagrant_box_directory` variable when you run packer or add it as an environment variable - `PACKER_VAGRANT_BOX_DIR` to work around this.
 
 ## Box sizes
 
